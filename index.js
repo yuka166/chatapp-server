@@ -27,8 +27,8 @@ database();
 app.use(cors(
     {
         credentials: true,
-        origin: 'http://localhost:5173'
-        // origin: 'https://chatapp-yuka166.vercel.app'
+        // origin: 'http://localhost:5173'
+        origin: 'https://chatapp-yuka166.vercel.app'
     }
 ));
 
@@ -44,8 +44,8 @@ app.use(cookieParser());
 const io = new Server(server, {
     cors: {
         credentials: true,
-        origin: "http://localhost:5173"
-        // origin: 'https://chatapp-yuka166.vercel.app'
+        // origin: "http://localhost:5173"
+        origin: 'https://chatapp-yuka166.vercel.app'
     }
 });
 
@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
                         },
                         {
                             "$project": {
-                                _id: 1, content: 1
+                                _id: 1, content: 1, createdAt: 1
                             }
                         },
                         {
@@ -156,14 +156,14 @@ io.on("connection", (socket) => {
 
     socket.on('sendMessage', async (data) => {
         const chatDetails = { ...data, authorID: socket.token.id };
-        let username;
+        let username, newChat;
         try {
-            await Chat.create(chatDetails);
+            newChat = await Chat.create(chatDetails);
             username = await User.findOne({ _id: new mongoose.Types.ObjectId(socket.token.id) }, { _id: 0, username: 1 })
         } catch (e) {
             throw new Error(e)
         }
-        io.in(data.roomID).emit('getMessage', { ...chatDetails, authorName: username })
+        io.in(data.roomID).emit('getMessage', { ...newChat, authorName: username })
         io.in(data.roomID).emit('setRoom')
     })
 
