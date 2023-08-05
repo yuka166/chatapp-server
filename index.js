@@ -163,7 +163,13 @@ io.on("connection", (socket) => {
         } catch (e) {
             throw new Error(e)
         }
-        io.in(data.roomID).emit('getMessage', { ...newChat, authorName: username })
+        io.in(data.roomID).emit('getMessage', {
+            roomID: newChat.roomID.toString(),
+            authorID: newChat.authorID.toString(),
+            createdAt: newChat.createdAt,
+            content: newChat.content,
+            authorName: username
+        })
         io.in(data.roomID).emit('setRoom')
     })
 
