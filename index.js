@@ -104,7 +104,7 @@ io.on("connection", (socket) => {
                     pipeline: [
                         {
                             "$project": {
-                                _id: 1, username: 1
+                                _id: 1, username: 1, displayname: 1
                             }
                         },
                         {
@@ -181,6 +181,16 @@ io.on("connection", (socket) => {
 app.get('/', (req, res) => {
     res.send('Hello World!')
 });
+
+// [GET] /user/:id
+
+app.get('/user/:id', isAuth, async (req, res, next) => {
+    try {
+        res.json(await User.findById(req.params.id, "username displayname email"))
+    } catch (e) {
+        next(e)
+    }
+})
 
 // [GET] /users/:username
 
@@ -264,7 +274,9 @@ app.get('/rooms/:id', isAuth, async (req, res, next) => {
                 pipeline: [
                     {
                         "$project": {
-                            _id: 1, username: 1
+                            _id: 1,
+                            username: 1,
+                            displayname: 1
                         }
                     },
                     {
@@ -277,6 +289,25 @@ app.get('/rooms/:id', isAuth, async (req, res, next) => {
         next(e)
     }
 });
+
+// [PUT] /user/modify
+
+app.put('/user/modify', isAuth, async (req, res, next) => {
+    const formDate = req.body
+    try {
+        await User.findByIdAndUpdate(res.locals.userID, { displayname: req.body.displayname });
+        res.status(200).json({
+            status: 'Modify Succesfully!'
+        });
+    } catch (e) {
+        console.log("lỗi");
+        res.status(401).json({
+            status: 'Modify Failed!',
+            error: e
+        });
+        next(e)
+    }
+})
 
 // [POST] /auth/login
 
