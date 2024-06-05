@@ -323,11 +323,11 @@ app.post('/auth/login', async (req, res, next) => {
                 if (result) {
                     if (formData.staySignIn) {
                         const token = jwt.sign({ id: user._id }, 'asfzpfwo@2914#$%.fs', { expiresIn: '7d' });
-                        res.cookie('auth', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true, sameSite: "lax", secure: true });
+                        res.cookie('auth', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true, sameSite: "none", secure: true, partitioned: true });
                     }
                     else {
                         const token = jwt.sign({ id: user._id }, 'asfzpfwo@2914#$%.fs', { expiresIn: '1d' });
-                        res.cookie('auth', token, { httpOnly: true, sameSite: "lax", secure: true });
+                        res.cookie('auth', token, { httpOnly: true, sameSite: "none", secure: true, partitioned: true });
                     }
                     res.status(200).end();
                 }
